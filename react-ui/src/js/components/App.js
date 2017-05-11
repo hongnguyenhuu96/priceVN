@@ -19,16 +19,33 @@ export default class App extends React.Component{
   }
 
   sendRequest = () => {
-    axios.get('/allFptPhones')
+    // this.getFptPhone('http://localhost:5000/allFptPhones');
+    // this.getTgddPhone('http://localhost:5000/allTgddPhones');
+    // this.getFptPhone('/allFptPhones');
+    // this.getTgddPhone('/allTgddPhones');
+    this.getTgddPhone('https://pricevn.glitch.me/allTgddPhones');
+    this.getFptPhone('https://pricevn.glitch.me/allFptPhones');
+  }
+  
+  getFptPhone(url){
+    axios.get(url)
       .then(response => {
-        // console.log(response);
+        if(response.data.length === 0){
+          window.setTimeout(() => {this.getFptPhone(url) }, 1000)
+          return;
+        }
         this.setState({ fptPhones: response.data });
       })
       .catch(err => console.log(err));
+  }
 
-    axios.get('/allTgddPhones')
+  getTgddPhone(url){
+    axios.get(url)
       .then(response => {
-        // console.log(response);
+        if (response.data.length === 0) {
+          window.setTimeout(() => {this.getTgddPhone(url)}, 1000)
+          return;
+        }
         this.setState({ tgddPhones: response.data });
       })
       .catch(err => console.log(err));

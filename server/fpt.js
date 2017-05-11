@@ -2,10 +2,10 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 
 var fptRawHtml = '';
-makeRequestFPT = (getFromNumber) => {
+const makeRequestFPT = (getFromNumber) => {
 		return axios.get('http://fptshop.com.vn/Ajax/FilterProduct/ViewMore?page=' + getFromNumber + '&typeView=Hot&url=http%3A%2F%2Ffptshop.com.vn%2Fdien-thoai')
 			.then((response) => {
-				data = response.data;
+				let data = response.data;
 				fptRawHtml += data.content.trim();
 				if (data.next) {
 					return makeRequestFPT(data.totalCurrent);
@@ -43,13 +43,13 @@ module.exports = function getPhone() {
 				// get link img
 				$('img').each(function(i, elem){
 					if(i % 2 != 0){
-						img.push('https://' + elem.attribs.src);
+						img.push('https:' + elem.attribs.src);
 					}
 				})
 				
 				//save all properties to one variable
 				for (let i = 0; i < name.length; i++) {
-					let newPhone = { name: name[i], link: link[i], price: price[i], img: img[i], date: new Date(), source:'fpt'};
+					let newPhone = { name: name[i], link: link[i], price: price[i], img: img[i], source:'fpt'};
 					allFptPhone.push(newPhone);
 				}
 				return Promise.resolve(allFptPhone);

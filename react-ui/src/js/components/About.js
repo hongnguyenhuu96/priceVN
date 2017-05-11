@@ -8,6 +8,7 @@ export default class About extends React.Component{
       <ul>
           <h1>PriceVN</h1>
           <h2>Nguyen Huu Hong</h2>
+          <h3>Selected Topics on Technology</h3>
       </ul>
     </div>);
   }

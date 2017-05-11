@@ -4,7 +4,7 @@ const cheerio = require('cheerio');
 
 // request to get raw HTML
 var tgddRawHtml = '';
-makeRequestTGDD = () => {
+const makeRequestTGDD = () => {
 		return axios.post('https://www.thegioididong.com/aj/CategoryV4/Product',{
             PageSize: 1000,
             Category: 42
@@ -48,7 +48,7 @@ module.exports = function getPhone() {
 				});
 				//save to one variable
 				for (let i = 0; i < name.length; i++) {
-					let newPhone = { name: name[i], link: link[i], price: price[i], img:img[i] , date: new Date(), source:'tgdd'};
+					let newPhone = { name: name[i], link: link[i], price: price[i], img:img[i], source:'tgdd'};
 					allPhone.push(newPhone);
 				}
 				return Promise.resolve(allPhone);

@@ -31,7 +31,7 @@ class HeaderBar extends React.Component {
           <Link style={{textDecoration:"none"}} to='/'><MenuItem onClick={this.handleToggle}><strong>Main Page</strong></MenuItem></Link>
           <Link style={{textDecoration:"none"}} to='/store/fpt'><MenuItem onClick={this.handleToggle}><strong>Fpt Shop</strong></MenuItem></Link>
           <Link style={{textDecoration:"none"}} to='/store/tgdd'><MenuItem onClick={this.handleToggle}><strong>The gioi di dong</strong></MenuItem></Link>
-          {/*<Link style={{textDecoration:"none"}} to='/about'><MenuItem onClick={this.handleToggle}><strong>About</strong></MenuItem></Link>*/}
+          <Link style={{textDecoration:"none"}} to='/about'><MenuItem onClick={this.handleToggle}><strong>About</strong></MenuItem></Link>
           {/*<Link style={{textDecoration:"none"}} to='/contact' ><MenuItem onClick={this.handleToggle}><strong>Contact</strong></MenuItem></Link>*/}
         </Drawer>
       </div>

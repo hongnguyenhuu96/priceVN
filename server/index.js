@@ -2,6 +2,7 @@ const getPhoneFromFpt = require('./fpt');
 const getPhoneFromTGDD = require('./tgdd');
 const express = require('express');
 const path = require('path');
+const AllPhones = require('./allPhones');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,14 +11,14 @@ const PORT = process.env.PORT || 5000;
 app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
 
 // data in memory to response
-var FptPhones = [];
-var TgddPhones = [];
+var fptPhones = [];
+var tgddPhones = [];
 
 // wait get phone from fptShop.com
 const waitGetPhoneFromFpt = () => {
   return new Promise((resolve, reject) => {
     getPhoneFromFpt().then(function (fpt) {
-      FptPhones = fpt;
+      fptPhones = fpt;
       console.log('Get Phone From Fpt Done!');
       resolve();
     });
@@ -28,7 +29,7 @@ const waitGetPhoneFromFpt = () => {
 const waitGetPhoneFromTGDD = () => {
   return new Promise((resolve, reject) => {
     getPhoneFromTGDD().then(function (tgdd) {
-      TgddPhones = tgdd;
+      tgddPhones = tgdd;
       console.log('Get Phone From The Gioi Di Dong Done!');
       resolve();
     });
@@ -37,15 +38,35 @@ const waitGetPhoneFromTGDD = () => {
 
 // wait get all phone done
 const getPhone = () => (Promise.all([
-  waitGetPhoneFromFpt(),
-  waitGetPhoneFromTGDD(),
-]).then(() => console.log('Updated new data done!')))
+  waitGetPhoneFromFpt(), // set fptPHones
+  waitGetPhoneFromTGDD(), // set tgddPhones
+]).then(() => {
+  //update to database if exist else create new
+  let currentDate = new Date().toDateString();
+  AllPhones.findOneAndUpdate({ date: currentDate }, { fptPhones: fptPhones, tgddPhones: tgddPhones, date: currentDate }, { upsert: true, new: true, setDefaultsOnInsert: true}, function(err, doc){
+    if(err) throw err;
+    // console.log(doc);
+  });
+  console.log('Updated new data done!')
+}))
 
+const setDataFromDatabase = () => {
+  let currentDate = new Date().toDateString();
+  AllPhones.find({ date: currentDate }, function (err, phoneDay) {
+    if (err) throw err;
+    if (phoneDay.length > 0) {
+      fptPhones = phoneDay[phoneDay.length - 1].fptPhones;
+      tgddPhones = phoneDay[phoneDay.length - 1].fptPhones;
+    }
+  })
+}
+
+setDataFromDatabase();
 // get phone from website
 getPhone();
 
 // refresh data after 12 hours
-setInterval(getPhone, 3/4*3600000);
+setInterval(getPhone, 12*3600000);
 
 // Answer API requests.
 app.listen(PORT, function () {
@@ -54,15 +75,17 @@ app.listen(PORT, function () {
 
 app.get('/allFptPhones', function (req, res) {
   res.set('Content-Type', 'application/json');
-  res.send(FptPhones);
+  res.send(fptPhones);
 });
 
 app.get('/allTgddPhones', function (req, res) {
   res.set('Content-Type', 'application/json');
-  res.send(TgddPhones);
+  res.send(tgddPhones);
 });
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
 });
+
+
